@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 // app.get()
 app.use(express.json())//this allows server to parse json requests/response
 app.use("/api/contacts", require("./routes/contactRoutes"))
-app.use("/api/users", require("./routes/contactRoutes"))
+app.use("/api/users", require("./routes/userRoutes"))
 
 app.use(errorHandler) // use error handler
 
