@@ -1,6 +1,7 @@
 const asyncHandler =require("express-async-handler")
 const bcrypt = require("bcrypt")
 const User = require("../models/userModel")
+const { Error } = require("mongoose")
 
 const registerUser = asyncHandler(async (req, res)=>{
     const {username, email, password} = req.body
@@ -16,12 +17,30 @@ const registerUser = asyncHandler(async (req, res)=>{
     //hash pass
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // if(user && (await bcrypt.compare(pass)))
     console.log(hashedPassword);
-    
+    const user = await User.create({
+        username: username, 
+        email: email,
+        password: password,
+    })
+    if(user){
+        res.status(201).json({_id: user.id, email: user.email});
+    }else{
+        res.status(400)
+        throw new Error("user data not valid")
+    }
     res.json({message: "register the user"})
 })
 
 const loginUser = asyncHandler(async (req, res)=>{
+    const {email, password} = req.body;
+    if(!email ||  !password){
+        res.status(400);
+        throw new Error("allfeilds are mandatory")
+    }
+
+    const user = await User.findOne({email})
     res.json({message: "login the user"})
 } )
 
