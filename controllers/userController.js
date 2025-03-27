@@ -1,5 +1,6 @@
 const asyncHandler =require("express-async-handler")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 const User = require("../models/userModel")
 const { Error } = require("mongoose")
 
@@ -41,6 +42,17 @@ const loginUser = asyncHandler(async (req, res)=>{
     }
 
     const user = await User.findOne({email})
+
+    if (user && (await bcrypt.compare(password, user.password))){
+        const accessToken = jwt.sign({
+            user: {
+                username: user.username,
+                email : user.email,
+                id: user.id
+            },
+        }, )
+    }
+
     res.json({message: "login the user"})
 } )
 
